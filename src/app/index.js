@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTodos } from "../context/TodoContext";
 import {
   View,
   Text,
@@ -12,22 +13,9 @@ import {
 // TextInput is the field, Pressable is the button, FlatList is the list.
 export default function Home() {
   const [text, setText] = useState("");
-  const [todos, setTodos] = useState([
-    { id: "1", text: "Learn React Native", done: true },
-    { id: "2", text: "Build a to-do app", done: false },
-  ]);
+ const { todos, addTodo, toggleTodo, removeTodo } = useTodos();
 
-  const addTodo = () => {
-    const value = text.trim();
-    if (!value) return;
-    setTodos([{ id: Date.now().toString(), text: value, done: false }, ...todos]);
-    setText("");
-  };
-
-  const toggle = (id) =>
-    setTodos(todos.map((t) => (t.id === id ? { ...t, done: !t.done } : t)));
-
-  const remove = (id) => setTodos(todos.filter((t) => t.id !== id));
+ 
 
   const remaining = todos.filter((t) => !t.done).length;
 
@@ -40,10 +28,19 @@ export default function Home() {
           placeholderTextColor="#9aa0b4"
           value={text}
           onChangeText={setText}
-          onSubmitEditing={addTodo}
+          onSubmitEditing={() => {
+  addTodo(text);
+  setText("");
+}}
           returnKeyType="done"
         />
-        <Pressable style={styles.addButton} onPress={addTodo}>
+        <Pressable
+  style={styles.addButton}
+  onPress={() => {
+    addTodo(text);
+    setText("");
+  }}
+>
           <Text style={styles.addButtonText}>Add</Text>
         </Pressable>
       </View>
@@ -59,7 +56,7 @@ export default function Home() {
         }
         renderItem={({ item }) => (
           <View style={styles.card}>
-            <Pressable style={styles.cardLeft} onPress={() => toggle(item.id)}>
+           <Pressable style={styles.cardLeft} onPress={() => toggleTodo(item.id)}>
               <View style={[styles.checkbox, item.done && styles.checkboxDone]}>
                 {item.done && <Text style={styles.check}>✓</Text>}
               </View>
@@ -67,7 +64,7 @@ export default function Home() {
                 {item.text}
               </Text>
             </Pressable>
-            <Pressable onPress={() => remove(item.id)} hitSlop={10}>
+            <Pressable onPress={() => removeTodo(item.id)} hitSlop={10}>
               <Text style={styles.delete}>✕</Text>
             </Pressable>
           </View>
@@ -104,7 +101,7 @@ const styles = StyleSheet.create({
     color: "#1f2233",
   },
   addButton: {
-    backgroundColor: "#4f46e5",
+    backgroundColor: "#14532d",
     borderRadius: 14,
     paddingHorizontal: 22,
     justifyContent: "center",
@@ -148,7 +145,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
-  checkboxDone: { backgroundColor: "#4f46e5", borderColor: "#4f46e5" },
+  checkboxDone: { backgroundColor: "#d4a017", borderColor: "#d4a017" },
   check: { color: "#ffffff", fontSize: 15, fontWeight: "800" },
   itemText: { fontSize: 16, color: "#1f2233", flexShrink: 1 },
   itemTextDone: { textDecorationLine: "line-through", color: "#a3a7b8" },

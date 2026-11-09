@@ -41,3 +41,12 @@ example
 # generated native folders
 /ios
 /android
+
+# Local SDK backup files
+*.sdk57-backup/
+*.sdk57-backup
+*.backup*.json
+
+# All local backup files
+*backup*.json
+package-lock.sdk58-before-clean-install.json
